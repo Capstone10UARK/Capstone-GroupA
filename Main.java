@@ -9,7 +9,7 @@ class Main
    private static int mWidth;
    private static BufferedImage image;
    private static Matrix colorKey;
-   
+
    public static void rgbToInt(int color)
    {
       int[] rgb[] = new int[3];
@@ -22,7 +22,7 @@ class Main
          System.out.println("Value at " + i + " is " + rgb[i]);
       throw new IllegalArgumentException("Stop");
    }
-   
+
    public static void findColor(int x, int y)
    {
       for(int i = 0; i < mHeight; i++)
@@ -35,7 +35,7 @@ class Main
       }
       System.out.println();
    }
-   
+
    public static void main(String args[]) throws IOException
    {
       File file = new File("colorKey.png");
@@ -43,6 +43,6 @@ class Main
       mHeight = image.getHeight();
       mWidth = image.getWidth();
       findColor(1, 1);
-      colorKey = new Matrix(mHeight, mWidth*3);    
+      colorKey = new Matrix(mHeight, mWidth*3);
    }
 }

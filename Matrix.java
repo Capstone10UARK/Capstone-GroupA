@@ -21,7 +21,7 @@ import java.util.Iterator;
 public class Matrix
 {
 	/// Used to represent elements in the matrix for which the value is not known.
-	public static final double UNKNOWN_VALUE = -1e308; 
+	public static final double UNKNOWN_VALUE = -1e308;
 
 	// Data
 	private ArrayList<double[]> m_data = new ArrayList<double[]>(); //matrix elements
@@ -38,7 +38,7 @@ public class Matrix
 	///    addColumn, or
 	///    copyMetaData
 	@SuppressWarnings("unchecked")
-	public Matrix() 
+	public Matrix()
 	{
 		this.m_filename    = "";
 		this.m_attr_name   = new ArrayList<String>();
@@ -92,17 +92,17 @@ public class Matrix
 				{
 					String[] pieces = line.split("\\s+");
 					m_attr_name.add(pieces[1]);
-					
+
 					tempMap.clear();
 					tempMapS.clear();
-					
+
 					// If the attribute is nominal
 					if (pieces[2].startsWith("{"))
 					{
 						// Splits this string based on curly brackets or commas
 						String[] attributeNames = pieces[2].split("[{},]");
 						int valCount = 0;
-						
+
 						for (String attribute : attributeNames)
 						{
 							if (!attribute.equals("")) // Ignore empty strings
@@ -112,55 +112,55 @@ public class Matrix
 							}
 						}
 					}
-					
+
 					// The attribute is continuous if it wasn't picked up in the previous "if" statement
-					
+
 					m_str_to_enum.add(new HashMap<String, Integer>(tempMap));
 					m_enum_to_str.add(new HashMap<Integer, String>(tempMapS));
-					
+
 					attrCount++;
 				}
 				else if (upper.startsWith("@DATA"))
 				{
 					m_data.clear();
-					
+
 					while (s.hasNextLine())
 					{
 						double[] temp = new double[attrCount];
 
 						lineNum++;
 						line  = s.nextLine().trim();
-						
+
 						if (line.startsWith("%") || line.isEmpty()) continue;
 						String[] pieces = line.split(",");
-						
+
 						if (pieces.length < attrCount) throw new IllegalArgumentException("Expected more elements on line: " + lineNum + ".");
-						
+
 						for (int i = 0; i < attrCount; i++)
 						{
 							int vals   = valueCount(i);
 							String val = pieces[i];
-							
+
 							// Unknown values are always set to UNKNOWN_VALUE
 							if (val.equals("?"))
 							{
 								temp[i] = UNKNOWN_VALUE;
 								continue;
 							}
-		
+
 							// If the attribute is nominal
 							if (vals > 0)
 							{
 								HashMap<String, Integer> enumMap = m_str_to_enum.get(i);
 								if (!enumMap.containsKey(val))
 									throw new IllegalArgumentException("Unrecognized enumeration value " + val + " on line: " + lineNum + ".");
-									
+
 								temp[i] = (double)enumMap.get(val);
 							}
 							else
 								temp[i] = Double.parseDouble(val); // The attribute is continuous
 						}
-						
+
 						m_data.add(temp);
 					}
 				}
@@ -184,26 +184,26 @@ public class Matrix
 
 	/// Saves the matrix to an ARFF file
 	public void saveARFF(String filename)
-	{		
+	{
 		PrintWriter os = null;
-		
+
 		try
 		{
 			os = new PrintWriter(filename);
 			// Print the relation name, if one has been provided ('x' is default)
 			os.print("@RELATION ");
 			os.println(m_filename.isEmpty() ? "x" : m_filename);
-			
+
 			// Print each attribute in order
 			for (int i = 0; i < m_attr_name.size(); i++)
 			{
 				os.print("@ATTRIBUTE ");
-				
+
 				String attributeName = m_attr_name.get(i);
 				os.print(attributeName.isEmpty() ? "x" : attributeName);
-				
+
 				int vals = valueCount(i);
-				
+
 				if (vals == 0) os.println(" REAL");
 				else
 				{
@@ -216,7 +216,7 @@ public class Matrix
 					os.println("}");
 				}
 			}
-			
+
 			// Print the data
 			os.println("@DATA");
 			for (int i = 0; i < rows(); i++)
@@ -237,7 +237,7 @@ public class Matrix
 							os.print(attrValue(j, val));
 						}
 					}
-					
+
 					if (j + 1 < cols())	os.print(",");
 				}
 				os.println();
@@ -280,7 +280,7 @@ public class Matrix
 	{
 		m_data.clear();
 		m_attr_name = new ArrayList<String>(that.m_attr_name);
-		
+
 		// Make a deep copy of that.m_str_to_enum
 		m_str_to_enum = new ArrayList<HashMap<String, Integer>>();
 		for (HashMap<String, Integer> map : that.m_str_to_enum)
@@ -288,10 +288,10 @@ public class Matrix
 			HashMap<String, Integer> temp = new HashMap<String, Integer>();
 			for (Map.Entry<String, Integer> entry : map.entrySet())
 				temp.put(entry.getKey(), entry.getValue());
-			
+
 			m_str_to_enum.add(temp);
 		}
-		
+
 		// Make a deep copy of that.m_enum_to_string
 		m_enum_to_str = new ArrayList<HashMap<Integer, String>>();
 		for (HashMap<Integer, String> map : that.m_enum_to_str)
@@ -299,7 +299,7 @@ public class Matrix
 			HashMap<Integer, String> temp = new HashMap<Integer, String>();
 			for (Map.Entry<Integer, String> entry : map.entrySet())
 				temp.put(entry.getKey(), entry.getValue());
-			
+
 			m_enum_to_str.add(temp);
 		}
 	}
@@ -311,36 +311,36 @@ public class Matrix
 	{
 		m_data.clear();
 		String name = "col_" + cols();
-		
+
 		m_attr_name.add(name);
-		
+
 		HashMap<String, Integer> temp_str_to_enum = new HashMap<String, Integer>();
 		HashMap<Integer, String> temp_enum_to_str = new HashMap<Integer, String>();
-		
+
 		for (int i = 0; i < vals; i++)
 		{
 			String sVal = "val_" + i;
 			temp_str_to_enum.put(sVal, i);
 			temp_enum_to_str.put(i, sVal);
 		}
-		
+
 		m_str_to_enum.add(temp_str_to_enum);
 		m_enum_to_str.add(temp_enum_to_str);
 	}
-	
+
 	/// Adds a column to this matrix with 0 values (continuous data).
 	public void newColumn()
 	{
 		this.newColumn(0);
 	}
-	
+
 	/// Adds n columns to this matrix, each with 0 values (continuous data).
 	public void newColumns(int n)
 	{
 		for (int i = 0; i < n; i++)
 			newColumn();
 	}
-	
+
 	/// Adds one new row to this matrix. Returns a reference to the new row.
 	public double[] newRow()
 	{
@@ -351,35 +351,35 @@ public class Matrix
 		m_data.add(newRow);
 		return newRow;
 	}
-	
+
 	/// Adds 'n' new rows to this matrix
 	public void newRows(int n)
 	{
 		for (int i = 0; i < n; i++)
 			newRow();
 	}
-	
+
 	/// Returns the number of rows in the matrix
 	public int rows() { return m_data.size(); }
-	
+
 	/// Returns the number of columns (or attributes) in the matrix
 	public int cols() { return m_attr_name.size(); }
-	
+
 	/// Returns the name of the specified attribute
 	public String attrName(int col) { return m_attr_name.get(col); }
-	
+
 	/// Returns the name of the specified value
 	public String attrValue(int attr, int val)
-	{		
+	{
 		String value = m_enum_to_str.get(attr).get(val);
 		if (value == null)
 			throw new IllegalArgumentException("No name.");
 		else return value;
 	}
-	
+
 	/// Returns a reference to the specified row
 	public double[] row(int index) { return m_data.get(index); }
-	
+
 	/// Swaps the positions of the two specified rows
 	public void swapRows(int a, int b)
 	{
@@ -387,11 +387,11 @@ public class Matrix
 		m_data.set(a, m_data.get(b));
 		m_data.set(b, temp);
 	}
-	
+
 	/// Returns the number of values associated with the specified attribute (or column)
 	/// 0 = continuous, 2 = binary, 3 = trinary, etc.
 	public int valueCount(int attr) { return m_enum_to_str.get(attr).size(); }
-	
+
 	/// Returns the mean of the elements in the specified column. (Elements with the value UNKNOWN_VALUE are ignored.)
 	public double columnMean(int col)
 	{
@@ -406,10 +406,10 @@ public class Matrix
 				count++;
 			}
 		}
-		
+
 		return sum / count;
 	}
-	
+
 	/// Returns the minimum element in the specified column. (Elements with the value UNKNOWN_VALUE are ignored.)
 	public double columnMin(int col)
 	{
@@ -420,7 +420,7 @@ public class Matrix
 			if (val != UNKNOWN_VALUE)
 				min = Math.min(min, val);
 		}
-		
+
 		return min;
 	}
 
@@ -434,10 +434,10 @@ public class Matrix
 			if (val != UNKNOWN_VALUE)
 				max = Math.max(max, val);
 		}
-		
+
 		return max;
 	}
-	
+
 	/// Returns the most common value in the specified column. (Elements with the value UNKNOWN_VALUE are ignored.)
 	public double mostCommonValue(int col)
 	{
@@ -449,11 +449,11 @@ public class Matrix
 			{
 				Integer result = counts.get(val);
 				if (result == null) result = 0;
-				
+
 				counts.put(val, result + 1);
 			}
 		}
-		
+
 		int valueCount = 0;
 		double value   = 0;
 		for (Map.Entry<Double, Integer> entry : counts.entrySet())
@@ -464,7 +464,7 @@ public class Matrix
 				valueCount = entry.getValue();
 			}
 		}
-		
+
 		return value;
 	}
 	/// Copies the specified rectangular portion of that matrix, and puts it in the specified location in this matrix.
@@ -492,7 +492,7 @@ public class Matrix
 				dest[j] = source[colBegin + j];
 		}
 	}
-	
+
 	/// Sets every element in the matrix to the specified value.
 	public void setAll(double val)
 	{
@@ -518,7 +518,7 @@ public class Matrix
 		int c = cols();
 		if (that.cols() != c)
 			throw new IllegalArgumentException("Matrices have different number of columns.");
-		
+
 		for (int i = 0; i < c; i++)
 		{
 			if (valueCount(i) != that.valueCount(i))
