@@ -42,11 +42,11 @@ class VFI_Map
      return RGB_VelMap.get(RGB);
    }
 
-   public static int[] getDistances(int RGB){
+   public static int[] getDistances(int RGB){  
      return RGB_DisMap.get(RGB);
    }
 
-   public static void main(String args[]) throws IOException
+   public static void Init() throws IOException
    {
       File file = new File("images/colorKey.png");
       image = ImageIO.read(file);
@@ -60,7 +60,7 @@ class VFI_Map
       findVelDis();
 
       //Test for velocity and distance at given pixel
-      System.out.println(RGB_VelMap.get(image.getRGB(0,0)) + ", " + RGB_DisMap.get(image.getRGB(0,0))[0]);
-      System.out.println(getDistances(image.getRGB(0,0))[0] + ", " + getDistances(image.getRGB(0,0))[1]);
+      //System.out.println(RGB_VelMap.get(image.getRGB(0,0)) + ", " + RGB_DisMap.get(image.getRGB(0,0))[0]);
+      //System.out.println(getDistances(image.getRGB(0,0))[0] + ", " + getDistances(image.getRGB(0,0))[1]);
    }
 }
