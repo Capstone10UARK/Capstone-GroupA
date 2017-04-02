@@ -19,6 +19,7 @@ class MyPanel extends JPanel
    {
       this.model = m;
       frame = ImageIO.read(new File("stillFrameNoVec.png"));
+      //frame = ImageIO.read(new File("images/colorKey.png"));
       //frame = ImageIO.read(new File("stillFrame.png"));
    }
    
@@ -31,8 +32,10 @@ class MyPanel extends JPanel
       g.setColor(Color.white);
       for(int i = 0; i < model.getVectors().size(); i++)
       {
+         //Draws a line from point (x1, y1) to (x2, y2)
          g.drawLine(model.getVectors().get(i).x1, model.getVectors().get(i).y1, 
             model.getVectors().get(i).x2, model.getVectors().get(i).y2);
+         //Draw arrow at the end of the line
          g.fillPolygon(model.getVectors().get(i).xpoints, model.getVectors().get(i).ypoints, 3);
       }
    }

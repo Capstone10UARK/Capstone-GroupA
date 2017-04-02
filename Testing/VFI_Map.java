@@ -3,6 +3,9 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Iterator;
+import java.awt.Color;
 
 class VFI_Map
 {
@@ -42,8 +45,28 @@ class VFI_Map
      return RGB_VelMap.get(RGB);
    }
 
+   public static int searchMap(Map mp, int color) 
+   {
+       Iterator it = mp.entrySet().iterator();
+       int minDifference = 10000000;
+       int value = 0;
+       while (it.hasNext()) 
+       {
+           Map.Entry pair = (Map.Entry)it.next();
+           int difference = Math.abs(Math.abs((int)pair.getKey()) - Math.abs(color));
+           if(minDifference > difference)
+           {
+              minDifference = difference;
+              value = (int)pair.getKey();
+           }
+       }
+       System.out.println("Minimum difference is " + minDifference + " and color found in map is " + value);
+       return value;
+   }
+   
    public static int[] getDistances(int RGB){  
-     return RGB_DisMap.get(RGB);
+     int close = searchMap(RGB_DisMap, RGB);
+     return RGB_DisMap.get(close);
    }
 
    public static void Init() throws IOException
