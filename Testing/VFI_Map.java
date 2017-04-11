@@ -9,13 +9,13 @@ import java.awt.Color;
 
 class VFI_Map
 {
-   private static int mHeight;
-   private static int mWidth;
+   private static int mHeight; //height of color key image
+   private static int mWidth; //width of color key image
    private static double Vmax = 236.5;
-   private static double Dmax;
-   private static BufferedImage image;
-   private static HashMap<Integer,Double> RGB_VelMap = new HashMap<>();
-   private static HashMap<Integer,int[]> RGB_DisMap = new HashMap<>();
+   private static double Dmax; //maximum distance from center of color hue to edge
+   private static BufferedImage image; //The actual image of the color key
+   private static HashMap<Integer,Double> RGB_VelMap = new HashMap<>(); //mapping from a color to a velocity 
+   private static HashMap<Integer,int[]> RGB_DisMap = new HashMap<>(); //mapping from a color to a distance from the center of the key
 
    public static void findVelDis()
    {
@@ -41,26 +41,31 @@ class VFI_Map
       }
    }
 
-   public static double getVelocity(int RGB){
-     return RGB_VelMap.get(RGB);
-   }
-
    public static int searchMap(Map mp, int color) 
    {
        Iterator it = mp.entrySet().iterator();
-       int minDifference = 10000000;
+       float minDifference = 10000000;
        int value = 0;
+       
+       float[] selectedHSL = new float[3];
+       Color sel = new Color(color);
+       Color.RGBtoHSB(sel.getRed(), sel.getGreen(), sel.getBlue(), selectedHSL);
+       
        while (it.hasNext()) 
        {
            Map.Entry pair = (Map.Entry)it.next();
-           int difference = Math.abs(Math.abs((int)pair.getKey()) - Math.abs(color));
-           if(minDifference > difference)
+           
+           Color map = new Color((int)pair.getKey());
+           float[] hsl = new float[3];
+           Color.RGBtoHSB(map.getRed(), map.getGreen(), map.getBlue(), hsl);
+           float difference = Math.abs(selectedHSL[0] - hsl[0]);
+           
+           if(difference < minDifference && difference < 0.01)
            {
               minDifference = difference;
               value = (int)pair.getKey();
            }
        }
-       System.out.println("Minimum difference is " + minDifference + " and color found in map is " + value);
        return value;
    }
    
@@ -68,9 +73,15 @@ class VFI_Map
      int close = searchMap(RGB_DisMap, RGB);
      return RGB_DisMap.get(close);
    }
+   
+   public static double getVelocity(int RGB){
+     int close = searchMap(RGB_VelMap, RGB);
+     return RGB_VelMap.get(close);
+   }
 
    public static void Init() throws IOException
    {
+      //Preloaded key for color mapping
       File file = new File("images/colorKey.png");
       image = ImageIO.read(file);
       mHeight = image.getHeight();
@@ -81,9 +92,5 @@ class VFI_Map
 
       //Find Velocity for given pixel based on RGB value and the distance to the origin
       findVelDis();
-
-      //Test for velocity and distance at given pixel
-      //System.out.println(RGB_VelMap.get(image.getRGB(0,0)) + ", " + RGB_DisMap.get(image.getRGB(0,0))[0]);
-      //System.out.println(getDistances(image.getRGB(0,0))[0] + ", " + getDistances(image.getRGB(0,0))[1]);
    }
 }

@@ -2,7 +2,6 @@ class Vector
 {
     /**
       * Draw an arrow line betwwen two point 
-      * @param g the graphic component
       * @param x1 x-position of first point
       * @param y1 y-position of first point
       * @param x2 x-position of second point

@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.io.IOException;
 import java.awt.Color;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.Rectangle;
 
 class Controller implements MouseListener
 {
@@ -28,7 +30,28 @@ class Controller implements MouseListener
    
    public void mousePressed(MouseEvent e)
    {
-      model.addVector(e.getX(), e.getY(), MyPanel.frame.getRGB(e.getX(), e.getY()));
+      if(SwingUtilities.isLeftMouseButton(e))
+      {
+         if(MyPanel.frame != null)
+            model.addVector(e.getX(), e.getY(), MyPanel.frame.getRGB(e.getX(), e.getY()));
+      }
+      else if(SwingUtilities.isRightMouseButton(e))
+      {
+         try
+         {
+            Rectangle rect = ScreenCaptureRectangle.getCapture();
+            if(rect != null)
+            {
+               model.generateMap(rect);
+            }
+            else
+               System.out.println("Did not read capture properly.");
+         }
+         catch(Exception ex)
+         {
+            ex.printStackTrace();
+         }
+      }
    }
    
    public void mouseReleased(MouseEvent e) {    }

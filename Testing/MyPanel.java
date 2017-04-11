@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 import java.awt.event.WindowEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import javax.swing.JFileChooser;
 
 class MyPanel extends JPanel
 {
@@ -18,9 +19,6 @@ class MyPanel extends JPanel
    MyPanel(Model m) throws Exception 
    {
       this.model = m;
-      frame = ImageIO.read(new File("stillFrameNoVec.png"));
-      //frame = ImageIO.read(new File("images/colorKey.png"));
-      //frame = ImageIO.read(new File("stillFrame.png"));
    }
    
    public void paintComponent(Graphics g) 
@@ -28,7 +26,6 @@ class MyPanel extends JPanel
       // Draw the view
       g.drawImage(this.frame, 0, 0, null);
       //Draw Vectors if any exist
-      //for each vector 
       g.setColor(Color.white);
       for(int i = 0; i < model.getVectors().size(); i++)
       {
@@ -39,4 +36,10 @@ class MyPanel extends JPanel
          g.fillPolygon(model.getVectors().get(i).xpoints, model.getVectors().get(i).ypoints, 3);
       }
    }
+   
+   public void addImage(String filename) throws Exception
+   {
+      frame = ImageIO.read(new File(filename));
+   }
+   
 }
