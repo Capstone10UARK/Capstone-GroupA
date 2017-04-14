@@ -1,0 +1,182 @@
+package com.vfi.main;
+
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.wb.swt.SWTResourceManager;
+import org.eclipse.swt.widgets.Canvas;
+import javax.swing.text.html.ImageView;
+import javax.swing.text.Element;
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.beans.PojoProperties;
+import org.eclipse.core.databinding.observable.Realm;
+import org.eclipse.jface.databinding.swt.SWTObservables;
+
+public class MainActivity {
+	private DataBindingContext m_bindingContext;
+
+	protected Shell shlVfigui;
+	private Text txtTest;
+	private File file;
+	/**
+	 * @wbp.nonvisual location=144,289
+	 */
+	private final JFileChooser FileChooser = new JFileChooser();
+
+	/**
+	 * Launch the application.
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		Display display = Display.getDefault();
+		Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
+			public void run() {
+				try {
+					MainActivity window = new MainActivity();
+					window.open();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Open the window.
+	 */
+	public void open() {
+		Display display = Display.getDefault();
+		createContents();
+		shlVfigui.open();
+		shlVfigui.layout();
+		while (!shlVfigui.isDisposed()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
+	}
+
+	/**
+	 * Create contents of the window.
+	 */
+	 protected void createContents() {
+	        shlVfigui = new Shell();
+	        shlVfigui.setMinimumSize(new Point(700, 600));
+	        shlVfigui.setSize(450, 300);
+	        shlVfigui.setText("VFI_GUI");
+	       
+	        
+	        Button btnAreaSelction = new Button(shlVfigui, SWT.RADIO);
+	        btnAreaSelction.setSelection(true);
+	        btnAreaSelction.setBounds(506, 86, 90, 16);
+	        btnAreaSelction.setText("Area Selction");
+	        
+	        Button btnMouseOverSelection = new Button(shlVfigui, SWT.RADIO);
+	        btnMouseOverSelection.addSelectionListener(new SelectionAdapter() {
+	        	@Override
+	        	public void widgetSelected(SelectionEvent e) {
+	        	}
+	        });
+	        btnMouseOverSelection.setBounds(506, 138, 136, 16);
+	        btnMouseOverSelection.setText("Mouse Click Selection");
+	        
+
+	        txtTest = new Text(shlVfigui, SWT.BORDER);
+	        txtTest.setBounds(55, 470, 474, 21);
+	        txtTest.setVisible(false);
+	        
+	        Label lblNoSelect = new Label(shlVfigui, SWT.SHADOW_NONE);
+	        lblNoSelect.setText("No File Selected");
+	        lblNoSelect.setBounds(55, 495, 474, 21);
+	        lblNoSelect.setVisible(false);
+	        
+	        txtTest = new Text(shlVfigui, SWT.BORDER);
+	        txtTest.setBounds(55, 470, 474, 21);
+	        //txtTest.setVisible(false);
+	        
+	        Button btnBrowse = new Button(shlVfigui, SWT.NONE);
+	        
+	        Label lblImage = new Label(shlVfigui, SWT.BORDER | SWT.SHADOW_NONE);
+	        lblImage.setImage(null);
+	        lblImage.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+	        lblImage.setBounds(55, 27, 398, 421);
+	        m_bindingContext = initDataBindings();
+	        
+	        Canvas canvas = new Canvas(shlVfigui, SWT.NONE);
+	        //canvas.setBackgroundImage(bufferedImage);
+	        canvas.setBounds(55, 27, 64, 64);
+	        
+	        btnBrowse.addMouseListener(new MouseAdapter() {
+	            @Override
+	            public void mouseUp(MouseEvent e) {
+
+	                
+	                 final JFileChooser Filechoose=new JFileChooser();
+	                 FileNameExtensionFilter filter = new FileNameExtensionFilter("jpg", "png");
+	                 Filechoose.setFileFilter(filter);
+	                 
+	                    int retval=Filechoose.showOpenDialog(null);
+	                    if (retval == JFileChooser.APPROVE_OPTION) {
+	                    	
+	                        //... The user selected a file, get it, use it.
+	                        file = Filechoose.getSelectedFile();
+	                        txtTest.setText(file.getPath());
+	                        
+	                        //Trying to load the image but won't work
+//-------------------------------------------------------------------------------------	                        
+	                        /*try {
+								BufferedImage bufferedImage = ImageIO.read(file);
+								//lblImage.setImage(null));
+								canvas.setBackgroundPixel(bufferedImage);
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+	                      	*/
+//-------------------------------------------------------------------------------------	                        
+	                        
+	                    	//hide label
+	                    	lblNoSelect.setVisible(false);
+	                    	//unhide text field
+	                    	txtTest.setVisible(true);          
+	                    } else {
+	                    	//unhide label
+	                     	lblNoSelect.setVisible(true);
+	                    }
+	                        
+	            }
+	        });
+	        btnBrowse.setBounds(535, 468, 75, 25);
+	        btnBrowse.setText("Browse");
+	        
+	        
+	        
+	        
+	        
+
+	    }
+	protected DataBindingContext initDataBindings() {
+		DataBindingContext bindingContext = new DataBindingContext();
+		//
+		return bindingContext;
+	}
+}
