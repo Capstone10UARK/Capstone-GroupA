@@ -1,0 +1,75 @@
+How the program starts:
+1. main method in Main.java
+	a. VFI_Map.Init()
+		-uses the preloaded color key to create the RGB mapping
+	b. Controller.startView()
+		-creates the controller (allows us to draw vectors on still images)
+		-creates the view	
+			*View is the meat of the GUI (View is a frame)
+			1. Connects model and controller to the view
+			2. 3 panels are created (each will be put into the View frame)
+			   **1 panel has the selected image/video
+			   **1 panel has buttons to control video
+			   **1 panel has buttons for the rest of the controls
+			3. Action listener in view checks for buttons
+
+***From here the basic GUI is setup
+***The only panel that is different is the frame/video panel thanks to VLCJ
+***This panel is of type MyPanel (extends JPanel)
+
+Fixable problems
+1. MyPanel.java is where the location of the VLC download is required
+        -Change NATIVE_LIBRARY_SEARCH_PATH (member variable)
+
+	-The contructor of MyPanel loads the library for VLCJ
+	   -In Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName().....)
+	   -This method saves us because it will get the library in 
+	   	".so", ".dll", etc. (whatever format)
+	
+	-There is a workaround for the path being absolute, but I don't care about
+	that right now
+	
+2. View.java in getUserInput() method
+	-I didn't bother with the user not entering something
+	-It does create an error (try it)
+	
+	
+Other Crap
+1. In MyPanel.java
+	a. addVideo method is where mac sucks
+	  -VLCJ claims that macs do not support this way of uploading videos
+	  *NOTE: java does have ability to detect OS (System class I think)
+	  --could add a conditional for this, but then we'll have to find
+	     how Mac sets up VLC videos in java (VLCJ says there is a way...just different from others)
+	  
+2. In Controller.java
+	a. I have a condition that says don't add vector until frame is set
+	  -This means that vectors won't draw on the video
+	  -There is still methods that need to be researched to tune the video
+	    so this conditon is left for now
+
+3. In View.java
+	a. Screen capture button doesn't work right now.  I am working on that
+  	    right now.
+  	    
+  	    
+***********LAST IMPORTANT THINGS***************************
+
+We must run the code with the .jar files from VLC
+
+1. They have to be included in compilation AND run
+
+    *my build.bash file should be a decent reference for this
+    *This is also why a makefile is a good idea cause they can be 
+    	configured according to OS
+    *something as simple as seperating my .jar files with : in the bash file
+      is different based on OS (windows has a semicolon instead of a colon)
+      
+   NOTE: Running the code may complain about a log file...ignore it.
+
+2. When running a video, you may see nothing
+    *Expand the panel that the video is suppose to be in and then press play
+    *Video is still a work in progress...not sure why this happens
+	
+
+

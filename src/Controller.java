@@ -16,11 +16,22 @@ class Controller implements MouseListener
    Model model;
    View view;
    
+   /*************************************************************************
+   //Method: Controller (constructor)
+   //Purpose: Construct the controller for the GUI
+   *************************************************************************/
    Controller() throws Exception
    {
       this.model = new Model(this);
    }
    
+   /*************************************************************************
+   //Method: startView
+   //Return: None (void)
+   //Purpose: Call the constructor for the controller and create the view
+   //  add a timer to the view so that the view gets redrawn (helps with 
+   //  having to draw vectos)
+   *************************************************************************/
    public static void startView() throws Exception
    {
       Controller c = new Controller();
@@ -28,29 +39,18 @@ class Controller implements MouseListener
       new Timer(20, c.view).start();
    }
    
+   /*************************************************************************
+   //Method: mousePressed
+   //Return: None (void)
+   //Purpose: Listen for mouse being pressed in the GUI.  Add a vector to 
+   //  location the moused clicked
+   *************************************************************************/
    public void mousePressed(MouseEvent e)
    {
       if(SwingUtilities.isLeftMouseButton(e))
       {
          if(MyPanel.frame != null)
             model.addVector(e.getX(), e.getY(), MyPanel.frame.getRGB(e.getX(), e.getY()));
-      }
-      else if(SwingUtilities.isRightMouseButton(e))
-      {
-         try
-         {
-            Rectangle rect = ScreenCaptureRectangle.getCapture();
-            if(rect != null)
-            {
-               model.generateMap(rect);
-            }
-            else
-               System.out.println("Did not read capture properly.");
-         }
-         catch(Exception ex)
-         {
-            ex.printStackTrace();
-         }
       }
    }
    
