@@ -38,7 +38,7 @@ class View extends JFrame implements ActionListener
    private static JButton maxVel;
    private static JButton next;
    private static JButton play;
-   private static JButton prev;
+   private static JButton pause;
    
    /***********************************************************************************************
    //Method: View (constructor)
@@ -81,15 +81,15 @@ class View extends JFrame implements ActionListener
       next.addActionListener(this);
       play = new JButton("Play");
       play.addActionListener(this);
-      prev = new JButton("Previous");
-      prev.addActionListener(this);
+      pause = new JButton("Pause");
+      pause.addActionListener(this);
       
       //Add controller to main frame interface, add necessary buttons to button panel
       buttonsPanel.add(browse);
       buttonsPanel.add(capture);
       buttonsPanel.add(maxVel);
       buttonsPanel.add(clear);
-      stepPanel.add(prev);
+      stepPanel.add(pause);
       stepPanel.add(play);
       stepPanel.add(next);
       this.panel.addMouseListener(controller);
@@ -231,11 +231,13 @@ class View extends JFrame implements ActionListener
        }
        if(act.getSource() == next)
        {
-          System.out.println("Next");
+          if(View.panel.getComponents().length != 0)
+             View.panel.nextFrame();
        }
-       if(act.getSource() == prev)
+       if(act.getSource() == pause)
        {
-          System.out.println("Prev");
+          if(View.panel.getComponents().length != 0)
+             View.panel.pauseVideo();
        }
        
        repaint(); //calls MyPanel.paintComponent

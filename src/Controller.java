@@ -47,6 +47,8 @@ class Controller implements MouseListener
    *************************************************************************/
    public void mousePressed(MouseEvent e)
    {
+      System.out.println("We detected something");
+   
       if(SwingUtilities.isLeftMouseButton(e))
       {
          if(MyPanel.frame != null)

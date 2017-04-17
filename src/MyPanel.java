@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.awt.Color;
 import javax.imageio.ImageIO;
+import java.io.IOException;
 import java.awt.event.WindowEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
@@ -26,7 +27,7 @@ class MyPanel extends JPanel
 {
    Model model;
    public static BufferedImage frame;
-   private EmbeddedMediaPlayer emp;
+   public static EmbeddedMediaPlayer emp;
    //Location of the VLCJ shared library (same location as the download for VLC)
    private static final String NATIVE_LIBRARY_SEARCH_PATH = "/usr/lib/vlc";
 
@@ -87,25 +88,35 @@ class MyPanel extends JPanel
       //Get rid of any image in panel
       if(frame != null)
          frame = null;
+      //BufferedImage getVideoSurfaceContents()
       
-      //Canvas -> used to display video
-      Canvas c = new Canvas();
-      //background is black (add to the panel)
-      c.setBackground(Color.black);
-      this.setLayout(new BorderLayout());
-      this.add(c);
-      //Init media player
-      MediaPlayerFactory mpf = new MediaPlayerFactory();
-      //control all interactions with the user
-      emp = mpf.newEmbeddedMediaPlayer();
-      emp.setVideoSurface(mpf.newVideoSurface(c));
-      //full screen
-      emp.toggleFullScreen();
-      emp.setEnableMouseInputHandling(true);
-      //disable keyboard
-      emp.setEnableKeyInputHandling(false);
-      //prepare file to read
-      emp.prepareMedia(filename);
+      String os = System.getProperty("os.name").toLowerCase();
+      if(os.indexOf("mac") >= 0)
+      {
+         System.out.println("This is a mac");
+      }
+      else
+      {
+         //Canvas -> used to display video
+         Canvas c = new Canvas();
+         //background is black (add to the panel)
+         c.setBackground(Color.black);
+         c.addMouseListener(View.controller);
+         this.setLayout(new BorderLayout());
+         this.add(c);
+         //Init media player
+         MediaPlayerFactory mpf = new MediaPlayerFactory();
+         //control all interactions with the user
+         emp = mpf.newEmbeddedMediaPlayer();
+         emp.setVideoSurface(mpf.newVideoSurface(c)); 
+         //full screen
+         emp.toggleFullScreen();
+         emp.setEnableMouseInputHandling(true);
+         //disable keyboard
+         emp.setEnableKeyInputHandling(false);
+         //prepare file to read
+         emp.prepareMedia(filename);
+      }
    }
    
    /**************************************************************************
@@ -116,5 +127,37 @@ class MyPanel extends JPanel
    public void playVideo()
    {
      emp.play();
+   }
+   
+   /***************************************************************************
+   //Method: nextFrame
+   //Return: None (void)
+   //Purpose: Move the video to the next frame
+   ***************************************************************************/
+   public void nextFrame()
+   {
+      emp.nextFrame();
+      /*BufferedImage image = emp.getVideoSurfaceContents();
+      if(image != null)
+      {
+         try
+         {
+          ImageIO.write(image, "PNG", new File("picture"));
+         }
+         catch(IOException ex)
+         {
+           ex.printStackTrace();
+         }
+      }*/
+   }
+   
+   /***************************************************************************
+   //Method: pauseVideo
+   //Return: None (void)
+   //Purpose: Pause the video
+   ***************************************************************************/
+   public void pauseVideo()
+   {
+      emp.setPause(true);
    }
 }
