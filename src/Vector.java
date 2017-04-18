@@ -11,10 +11,11 @@ class Vector
       */  
 
    public int x1, y1, x2, y2, d, h;
+   public double velocity;
    public int[] xpoints;
    public int[] ypoints;
 
-   Vector(int x1, int y1, int x2, int y2, int d, int h)
+   Vector(int x1, int y1, int x2, int y2, int d, int h, double velocity)
    {
       this.x1 = x1;
       this.y1 = y1;
@@ -22,6 +23,7 @@ class Vector
       this.y2 = y2;
       this.d = d;
       this.h = h;
+      this.velocity = velocity;
       
       int dx = this.x2 - this.x1; 
       int dy = this.y2 - this.y1;

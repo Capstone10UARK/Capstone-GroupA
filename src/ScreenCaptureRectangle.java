@@ -75,7 +75,7 @@ public class ScreenCaptureRectangle
     public static Rectangle getCapture() throws Exception 
     {
         Robot robot = new Robot();
-        ScreenCaptureRectangle capture = new ScreenCaptureRectangle(MyPanel.frame);
+        ScreenCaptureRectangle capture = new ScreenCaptureRectangle(Controller.view.panel.getPanelFrame());
         if(capture.captureRect != null)
            return capture.captureRect;
         else

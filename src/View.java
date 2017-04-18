@@ -21,14 +21,15 @@ import javax.swing.JTextField;
 import java.text.Format;
 import java.text.NumberFormat;
 import javax.swing.JLabel;
+import java.awt.Toolkit;
 
 class View extends JFrame implements ActionListener
 {
    public static Model model;
    public static Controller controller;
    public static MyPanel panel;
-   public static JSplitPane split;
-   public static JSplitPane finalSplit;
+   private static JSplitPane split;
+   private static JSplitPane finalSplit;
    private final JFileChooser fc = new JFileChooser();
    
    //Buttons
@@ -36,9 +37,11 @@ class View extends JFrame implements ActionListener
    private static JButton clear;
    private static JButton capture;
    private static JButton maxVel;
+   private static JButton createFile;
    private static JButton next;
    private static JButton play;
    private static JButton pause;
+   private static JButton grabFrames;
    
    /***********************************************************************************************
    //Method: View (constructor)
@@ -53,15 +56,15 @@ class View extends JFrame implements ActionListener
       
       //General information for the frame
       this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      this.setSize(1100, 1000);
+      this.setSize((int)Toolkit.getDefaultToolkit().getScreenSize().getWidth(), (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight());
       this.setTitle("SVAS");
       
       //Generate the different panels for the frame
       //The frame is the main window, which contains 3 individual panels
       this.panel = new MyPanel(model); //Panel contains the actual frame from "avi"
       JPanel buttonsPanel = new JPanel(); //Panel contains extra buttons for features of GUI 
-      JPanel stepPanel = new JPanel(); //Panel allows control to step through an "avi" video file
-      buttonsPanel.setLayout(new GridLayout(2,2));
+      JPanel stepPanel = new JPanel(new GridLayout(2,2)); //Panel allows control to step through an "avi" video file
+      buttonsPanel.setLayout(new GridLayout(3,2));
       
       //Generate the different buttons for the UI
       browse = new JButton("Upload File");
@@ -70,11 +73,14 @@ class View extends JFrame implements ActionListener
       clear = new JButton("Clear Vectors");
       clear.addActionListener(this);
       //Button to allow user to capture a portion of the screen
-      capture = new JButton("Capture Screen");
+      capture = new JButton("Get Average Velocity in Area");
       capture.addActionListener(this);
       //Button to allow user to set the maximum velocity
       maxVel = new JButton("Set Velocity");
       maxVel.addActionListener(this);
+      //Create a file of the vectors drawn 
+      createFile = new JButton("Create Vector File");
+      createFile.addActionListener(this);
       
       //Buttons to control the video
       next = new JButton("Next");
@@ -83,15 +89,19 @@ class View extends JFrame implements ActionListener
       play.addActionListener(this);
       pause = new JButton("Pause");
       pause.addActionListener(this);
+      grabFrames = new JButton("Grab Frames");
+      grabFrames.addActionListener(this);
       
       //Add controller to main frame interface, add necessary buttons to button panel
       buttonsPanel.add(browse);
       buttonsPanel.add(capture);
       buttonsPanel.add(maxVel);
       buttonsPanel.add(clear);
+      buttonsPanel.add(createFile);
       stepPanel.add(pause);
       stepPanel.add(play);
       stepPanel.add(next);
+      stepPanel.add(grabFrames);
       this.panel.addMouseListener(controller);
       
       //Create a spilt panel for easier use and add to the frame
@@ -102,8 +112,9 @@ class View extends JFrame implements ActionListener
       //setOneTouchExpandable allows the splits to be resized
       split.setOneTouchExpandable(true);
       finalSplit.setOneTouchExpandable(true);
-      split.setDividerLocation(600);
-      finalSplit.setDividerLocation(700);
+      //Set splits 3/4ths across the x direction for the vertical bar and 4/5ths down for the horizontal bar
+      split.setDividerLocation(3*(int)Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 4);
+      finalSplit.setDividerLocation(4*(int)Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 5);
       //Adds all the panels to the overall frame
       this.add(finalSplit);
     
@@ -151,7 +162,7 @@ class View extends JFrame implements ActionListener
       getMax.add(submission, BorderLayout.SOUTH);
       
       getMax.setLocationRelativeTo(null);
-      getMax.setSize(200, 100);
+      getMax.setSize((int)Toolkit.getDefaultToolkit().getScreenSize().getWidth()/5, (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth()/20);
       getMax.setVisible(true);
    }
    
@@ -185,7 +196,7 @@ class View extends JFrame implements ActionListener
                 else if(extension.equals("avi")||extension.equals("mp4"))
                    View.panel.addVideo(file.getAbsolutePath());
                 else
-                   System.out.println("File type is unsupported.");
+                   Main.alert("File type selected is not supported (accepts: '.jpeg' '.png' '.avi' and '.mp4')");
              }
              catch(Exception er)
              {
@@ -194,50 +205,72 @@ class View extends JFrame implements ActionListener
           }
           else 
           {
-             System.out.println("Open command cancelled by user.");
+             Main.alert("Open command cancelled by user");
           }
        }
        else if(act.getSource() == capture)
        {
-          if(View.panel.getComponents().length == 0)
-             System.out.println("nothing there");
-          else
-             System.out.println("something");
-       
-          /*try
+          if(View.panel.getPanelFrame() != null)
           {
-             Rectangle rect = ScreenCaptureRectangle.getCapture();
-             if(rect != null)
+             try
              {
-                View.model.captureScreen(rect);
+                //Grab Rectangle highlighted in the popup generated by ScreenCaptureRectangle.java
+                Rectangle rect = ScreenCaptureRectangle.getCapture();
+                if(rect != null)
+                {
+                   //Use the model to handle getting the average velocity from the region selected
+                   View.model.captureScreen(rect);
+                }
+                else
+                   System.out.println("Did not read capture properly.");
              }
-             else
-                System.out.println("Did not read capture properly.");
+             catch(Exception ex)
+             {
+                ex.printStackTrace();
+             }
           }
-          catch(Exception ex)
-          {
-             ex.printStackTrace();
-          }*/
+          else
+             Main.alert("No still image shown in frame");
        }
-       if(act.getSource() == maxVel)
+       else if(act.getSource() == maxVel)
        {
           getUserInput();
        }
-       if(act.getSource() == play)
+       else if(act.getSource() == play)
        {
           //Check if there is a video in the panel
           if(View.panel.getComponents().length != 0)
              View.panel.playVideo();
+          else
+             Main.alert("A video is not uploaded");
        }
-       if(act.getSource() == next)
+       else if(act.getSource() == next)
        {
           if(View.panel.getComponents().length != 0)
              View.panel.nextFrame();
+          else
+             Main.alert("A video is not uploaded");
        }
-       if(act.getSource() == pause)
+       else if(act.getSource() == pause)
        {
           if(View.panel.getComponents().length != 0)
              View.panel.pauseVideo();
+          else
+             Main.alert("A video is not uploaded");
+       }
+       else if(act.getSource() == grabFrames)
+       {
+          if(View.panel.getComponents().length != 0)
+             View.panel.getFrames();
+          else
+             Main.alert("A video is not uploaded");
+       }
+       else if(act.getSource() == createFile)
+       {
+          if(View.panel.getPanelFrame() != null)
+             View.model.writeVecFile();
+          else
+             Main.alert("No still image shown in frame");
        }
        
        repaint(); //calls MyPanel.paintComponent

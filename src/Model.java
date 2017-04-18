@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.awt.Color;
 import java.awt.Robot;
 import java.awt.Rectangle;
+import java.io.PrintWriter;
 import java.awt.Toolkit;
+import java.io.FileNotFoundException;
 
 class Model
 {
@@ -49,8 +51,10 @@ class Model
       //Set the end point of the vector to relative distance the the color is on the color wheel
       x2 = x1 - x2;
       y2 = y1 - y2;
+      //Get the velocity magnitude
+      double vel = VFI_Map.getVelocity(color);
 
-      vectors.add(new Vector(x1, y1, x2, y2, 5, 2));
+      vectors.add(new Vector(x1, y1, x2, y2, 5, 2, vel));
    }
    
    /***************************************************************************************
@@ -62,5 +66,41 @@ class Model
    {
       BufferedImage capture = ScreenImage.createImage(View.panel);//Grab only the frame from the GUI
       BufferedImage screenShot = capture.getSubimage(rect.x, rect.y, rect.width, rect.height);
+   }
+   
+   /**************************************************************************************
+   //Method: writeVecFile
+   //Return: None (void)
+   //Purpose: Write out vectors of a frame to a file
+   **************************************************************************************/
+   public void writeVecFile()
+   {
+      /**********************************************************************************
+      //NEEDS MORE WORK
+      //Save the file to the same name as the frame being analyzed
+      //Possibly look at re-saving the frame image to save the vectors that are drawn
+      **********************************************************************************/
+      if(vectors.size() > 0)
+      {
+         try
+         {
+            File file = new File("testing.txt");
+            PrintWriter printWriter = new PrintWriter(file);
+            for(int i = 0; i < vectors.size(); i++)
+            {
+               int vectorNum = (i+1); //add one because of index at 0
+               printWriter.write("Vector number: " + vectorNum + " base (X): " + vectors.get(i).x1 + " base (Y): " + vectors.get(i).y1 + " Velocity: " + vectors.get(i).velocity + "\n");
+            }
+            printWriter.close();
+         }
+         catch(FileNotFoundException e)
+         {
+            Main.alert("Error when creating file");
+         }
+      }
+      else
+      {
+         Main.alert("No vectors are drawn");
+      }
    }
 }

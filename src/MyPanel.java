@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import javax.swing.JFileChooser;
+import java.util.concurrent.TimeUnit;
 
 //Needed to support VLCJ (".avi" video)
 import java.awt.BorderLayout;
@@ -26,8 +27,8 @@ import com.sun.jna.NativeLibrary;
 class MyPanel extends JPanel
 {
    Model model;
-   public static BufferedImage frame;
-   public static EmbeddedMediaPlayer emp;
+   private static BufferedImage frame;
+   private static EmbeddedMediaPlayer emp;
    //Location of the VLCJ shared library (same location as the download for VLC)
    private static final String NATIVE_LIBRARY_SEARCH_PATH = "/usr/lib/vlc";
 
@@ -67,6 +68,26 @@ class MyPanel extends JPanel
    }
    
    /************************************************************************
+   //Method: getPanelFrame
+   //Return: BufferedImage frame
+   //Purpose: Method for getting the image in the frame of this panel
+   ************************************************************************/
+   public BufferedImage getPanelFrame()
+   {
+      return this.frame;
+   }
+   
+   /************************************************************************
+   //Method: setPanelFrame
+   //Return: None (void)
+   //Purpose: Method for setting the frame with a BufferedImage
+   ************************************************************************/
+   public void setPanelFrame(BufferedImage panFrame)
+   {
+      this.frame = panFrame;
+   }
+   
+   /************************************************************************
    //Method: addImage
    //Return: None (void)
    //Purpose: sets the frame of the panel to contain the file selected
@@ -88,12 +109,11 @@ class MyPanel extends JPanel
       //Get rid of any image in panel
       if(frame != null)
          frame = null;
-      //BufferedImage getVideoSurfaceContents()
       
       String os = System.getProperty("os.name").toLowerCase();
       if(os.indexOf("mac") >= 0)
       {
-         System.out.println("This is a mac");
+         Main.alert("GUI does not support Mac playing a video");
       }
       else
       {
@@ -116,6 +136,9 @@ class MyPanel extends JPanel
          emp.setEnableKeyInputHandling(false);
          //prepare file to read
          emp.prepareMedia(filename);
+         //Setup video on first frame and then pause (let user control from there)
+         emp.startMedia(emp.mrl());
+         emp.pause();
       }
    }
    
@@ -137,18 +160,72 @@ class MyPanel extends JPanel
    public void nextFrame()
    {
       emp.nextFrame();
-      /*BufferedImage image = emp.getVideoSurfaceContents();
-      if(image != null)
-      {
-         try
-         {
-          ImageIO.write(image, "PNG", new File("picture"));
+   }
+   
+   /***************************************************************************
+   //Method: getFrames
+   //Return: None (void)
+   //Purpose: Step through video and generate images of frames
+   ***************************************************************************/
+   public void getFrames()
+   {
+        //Generate additional tag on frames captured
+        int count = 0;
+        //Grab the directory chosen by the user
+        String directory = "";
+        JFileChooser fc = new JFileChooser();
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int returnVal = fc.showOpenDialog(null);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION) 
+        {
+           File file = fc.getSelectedFile();
+           //Grab full path of directory
+           directory = file.getAbsolutePath();
+        }
+        else
+           Main.alert("Must be a directory");
+      
+        //If a directory location was selected for the screen shots then generate screen shots
+        if(!(directory.equals("")))
+        {    
+           //Allow dialog box for selecting directory to disappear
+           try
+           {
+              TimeUnit.MILLISECONDS.sleep(500);
+           }
+           catch(Exception ex)
+           { 
+              ex.printStackTrace();
+           }
+           while(true)
+           {
+               //emp.saveSnapshot(new File("frame" + Integer.toString(count)));
+               BufferedImage image = emp.getVideoSurfaceContents();
+               if(image != null)
+               {
+                  try
+                  {
+                     ImageIO.write(image, "PNG", new File(directory + "/Frame" + Integer.toString(count) + ".png"));
+                  }
+                  catch(IOException ex)
+                  {
+                     ex.printStackTrace();
+                  }
+               }
+               
+               count++;
+               float current = emp.getPosition();
+               float interval = 0.005f;
+               if((emp.getPosition() > 1.0f) || (current + interval > 1.0f))
+                  break;
+               emp.setPosition((current + interval));
+           }
          }
-         catch(IOException ex)
-         {
-           ex.printStackTrace();
-         }
-      }*/
+         else
+            Main.alert("Did not get any frames");
+            
+        Main.alert("Capture frames was successful.");    
    }
    
    /***************************************************************************

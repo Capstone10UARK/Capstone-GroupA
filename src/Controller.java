@@ -14,7 +14,7 @@ import java.awt.Rectangle;
 class Controller implements MouseListener
 {
    Model model;
-   View view;
+   public static View view;
    
    /*************************************************************************
    //Method: Controller (constructor)
@@ -47,12 +47,10 @@ class Controller implements MouseListener
    *************************************************************************/
    public void mousePressed(MouseEvent e)
    {
-      System.out.println("We detected something");
-   
       if(SwingUtilities.isLeftMouseButton(e))
       {
-         if(MyPanel.frame != null)
-            model.addVector(e.getX(), e.getY(), MyPanel.frame.getRGB(e.getX(), e.getY()));
+         if(view.panel.getPanelFrame() != null)
+            model.addVector(e.getX(), e.getY(), view.panel.getPanelFrame().getRGB(e.getX(), e.getY()));
       }
    }
    
