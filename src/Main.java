@@ -17,7 +17,7 @@ public class Main
       VFI_Map.Init();
       Controller.startView();
    }
-   
+
    /************************************************************************
    //Method: alert
    //Return: None (void)

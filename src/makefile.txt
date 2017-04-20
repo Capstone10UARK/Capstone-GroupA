@@ -1,0 +1,32 @@
+JFLAGS = -classpath
+ifeq ($(shell uname), Windows)
+	JAR = ".;vlcj-3.8.0/jna-3.5.2.jar;vlcj-3.8.0/platform-3.5.2.jar;vlcj-3.8.0/slf4j-api-1.7.10.jar;vlcj-3.8.0/vlcj-3.8.0.jar"
+endif
+JC = javac
+JVM = java
+.SUFFIXES: .java .class
+.java.class:
+	$(JC) $(JFLAGS) $(JAR) $*.java
+
+CLASSES = \
+    VFI_Map.java \
+    Vector.java \
+    ScreenCaptureRectangle.java \
+    ScreenImage.java \
+    Controller.java \
+    Model.java \
+    View.java \
+    MyPanel.java \
+    Main.java \
+    
+MAIN = Main
+
+default: classes
+
+classes: $(CLASSES:.java=.class)
+
+run: $(MAIN).class
+	$(JVM) $(JFLAGS) $(JAR) $(MAIN)
+
+clean:
+	$(RM) *.class
