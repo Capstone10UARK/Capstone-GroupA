@@ -30,7 +30,7 @@ class MyPanel extends JPanel
    private static BufferedImage frame;
    private static EmbeddedMediaPlayer emp;
    //Location of the VLCJ shared library (same location as the download for VLC)
-   private static final String NATIVE_LIBRARY_SEARCH_PATH = "/usr/lib/vlc";
+   private static final String NATIVE_LIBRARY_SEARCH_PATH = "./library/";
 
    /*************************************************************
    //Method: MyPanel (constructor)
