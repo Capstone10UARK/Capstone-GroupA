@@ -31,7 +31,7 @@ class View extends JFrame implements ActionListener
    private static JSplitPane split;
    private static JSplitPane finalSplit;
    private final JFileChooser fc = new JFileChooser();
-   
+
    //Buttons
    private static JButton browse;
    private static JButton clear;
@@ -42,34 +42,34 @@ class View extends JFrame implements ActionListener
    private static JButton play;
    private static JButton pause;
    private static JButton grabFrames;
-   
+
    /***********************************************************************************************
    //Method: View (constructor)
    //Return: None (void)
-   //Purpose: Create the view for the user.  View is a frame that contains panels.  Panels can 
+   //Purpose: Create the view for the user.  View is a frame that contains panels.  Panels can
    //   contain butons, a frame, or a video
    ***********************************************************************************************/
    View(Controller c, Model m) throws Exception
    {
       this.model = m;
       this.controller = c;
-      
+
       //General information for the frame
       this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       this.setSize((int)Toolkit.getDefaultToolkit().getScreenSize().getWidth(), (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight());
       this.setTitle("SVAS");
-      
+
       //Generate the different panels for the frame
       //The frame is the main window, which contains 3 individual panels
       this.panel = new MyPanel(model); //Panel contains the actual frame from "avi"
-      JPanel buttonsPanel = new JPanel(); //Panel contains extra buttons for features of GUI 
+      JPanel buttonsPanel = new JPanel(); //Panel contains extra buttons for features of GUI
       JPanel stepPanel = new JPanel(new GridLayout(2,2)); //Panel allows control to step through an "avi" video file
       buttonsPanel.setLayout(new GridLayout(3,2));
-      
+
       //Generate the different buttons for the UI
       browse = new JButton("Upload File");
       browse.addActionListener(this);
-      //Button to allow user to clear the vectors drawn on the screen 
+      //Button to allow user to clear the vectors drawn on the screen
       clear = new JButton("Clear Vectors");
       clear.addActionListener(this);
       //Button to allow user to capture a portion of the screen
@@ -78,10 +78,10 @@ class View extends JFrame implements ActionListener
       //Button to allow user to set the maximum velocity
       maxVel = new JButton("Set Velocity");
       maxVel.addActionListener(this);
-      //Create a file of the vectors drawn 
+      //Create a file of the vectors drawn
       createFile = new JButton("Create Vector File");
       createFile.addActionListener(this);
-      
+
       //Buttons to control the video
       next = new JButton("Next");
       next.addActionListener(this);
@@ -91,7 +91,7 @@ class View extends JFrame implements ActionListener
       pause.addActionListener(this);
       grabFrames = new JButton("Grab Frames");
       grabFrames.addActionListener(this);
-      
+
       //Add controller to main frame interface, add necessary buttons to button panel
       buttonsPanel.add(browse);
       buttonsPanel.add(capture);
@@ -103,12 +103,12 @@ class View extends JFrame implements ActionListener
       stepPanel.add(next);
       stepPanel.add(grabFrames);
       this.panel.addMouseListener(controller);
-      
+
       //Create a spilt panel for easier use and add to the frame
       this.split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panel, buttonsPanel);
       this.finalSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, split, stepPanel);
-      
-      //Set up where the screens split in the GUI 
+
+      //Set up where the screens split in the GUI
       //setOneTouchExpandable allows the splits to be resized
       split.setOneTouchExpandable(true);
       finalSplit.setOneTouchExpandable(true);
@@ -117,12 +117,12 @@ class View extends JFrame implements ActionListener
       finalSplit.setDividerLocation(4*(int)Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 5);
       //Adds all the panels to the overall frame
       this.add(finalSplit);
-    
+
       //Force frame to show in center of screen and make it visible to user
       this.setLocationRelativeTo(null);
       this.setVisible(true);
    }
-   
+
    /*********************************************************************************
    //Method: getUserInput (stand-alone window)
    //Return: None (void)
@@ -134,17 +134,17 @@ class View extends JFrame implements ActionListener
       JPanel instructions = new JPanel();
       JPanel userInput = new JPanel();
       JPanel submission = new JPanel();
-      
+
       JLabel instruction = new JLabel("Enter the maximum velocity");
       instructions.add(instruction);
-      
+
       JTextField inputField = new JTextField(20);
       userInput.add(inputField);
-      
+
       JButton submit = new JButton("Submit");
       submit.addActionListener(new ActionListener()
       {
-          @Override 
+          @Override
           public void actionPerformed(ActionEvent act)
           {
              if(act.getSource() == submit)
@@ -156,34 +156,34 @@ class View extends JFrame implements ActionListener
           }
       });
       submission.add(submit);
-      
+
       getMax.add(instructions, BorderLayout.NORTH);
       getMax.add(inputField, BorderLayout.CENTER);
       getMax.add(submission, BorderLayout.SOUTH);
-      
+
       getMax.setLocationRelativeTo(null);
-      getMax.setSize((int)Toolkit.getDefaultToolkit().getScreenSize().getWidth()/5, (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth()/20);
+      getMax.setSize((int)Toolkit.getDefaultToolkit().getScreenSize().getWidth()/5, (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth()/10);
       getMax.setVisible(true);
    }
-   
+
    /*********************************************************************************
    //Method: actionPerformed
    //Return: None (void)
-   //Purpose: Watch for actions in the view and repaint the panel that contains the 
+   //Purpose: Watch for actions in the view and repaint the panel that contains the
    //  frame so that vectors can be seen
    *********************************************************************************/
    public void actionPerformed(ActionEvent act)
-   {  
+   {
        if(act.getSource() == clear)
        {
           //Clear the vectors drawn
           View.model.getVectors().clear();
        }
-       else if (act.getSource() == browse) 
+       else if (act.getSource() == browse)
        {
           int returnVal = fc.showOpenDialog(null);
 
-          if (returnVal == JFileChooser.APPROVE_OPTION) 
+          if (returnVal == JFileChooser.APPROVE_OPTION)
           {
              File file = fc.getSelectedFile();
              //Grab file's name and extension
@@ -203,7 +203,7 @@ class View extends JFrame implements ActionListener
                 er.printStackTrace();
              }
           }
-          else 
+          else
           {
              Main.alert("Open command cancelled by user");
           }
@@ -272,7 +272,7 @@ class View extends JFrame implements ActionListener
           else
              Main.alert("No still image shown in frame");
        }
-       
+
        repaint(); //calls MyPanel.paintComponent
    }
 }
