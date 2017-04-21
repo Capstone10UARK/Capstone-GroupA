@@ -1,0 +1,6 @@
+Vector number: 1 base (X): 434 base (Y): 325 Velocity: 180.59411512638653
+Vector number: 2 base (X): 385 base (Y): 338 Velocity: 119.14739127793756
+Vector number: 3 base (X): 385 base (Y): 338 Velocity: 119.14739127793756
+Vector number: 4 base (X): 384 base (Y): 313 Velocity: 146.28967990489247
+Vector number: 5 base (X): 359 base (Y): 307 Velocity: 124.24007684001687
+Vector number: 6 base (X): 351 base (Y): 341 Velocity: 119.14739127793756

@@ -37,21 +37,21 @@ class MyPanel extends JPanel
    //Purpose: Construct the personalized panel which will contain
    //  the still frame or video
    **************************************************************/
-   MyPanel(Model m) throws Exception 
+   MyPanel(Model m) throws Exception
    {
       this.model = m;
       //Load in the library for VLCJ
       NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), NATIVE_LIBRARY_SEARCH_PATH);
       Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
    }
-   
+
    /******************************************************************
    //Method: paintComponent
    //Return: None (void)
    //Purpose: redraws the image (frame) and the vectors (if any exist
    // in the list)
-   ******************************************************************/   
-   public void paintComponent(Graphics g) 
+   ******************************************************************/
+   public void paintComponent(Graphics g)
    {
       // Draw the view
       g.drawImage(this.frame, 0, 0, null);
@@ -60,13 +60,13 @@ class MyPanel extends JPanel
       for(int i = 0; i < model.getVectors().size(); i++)
       {
          //Draws a line from point (x1, y1) to (x2, y2)
-         g.drawLine(model.getVectors().get(i).x1, model.getVectors().get(i).y1, 
+         g.drawLine(model.getVectors().get(i).x1, model.getVectors().get(i).y1,
             model.getVectors().get(i).x2, model.getVectors().get(i).y2);
          //Draw arrow at the end of the line
          g.fillPolygon(model.getVectors().get(i).xpoints, model.getVectors().get(i).ypoints, 3);
       }
    }
-   
+
    /************************************************************************
    //Method: getPanelFrame
    //Return: BufferedImage frame
@@ -76,7 +76,7 @@ class MyPanel extends JPanel
    {
       return this.frame;
    }
-   
+
    /************************************************************************
    //Method: setPanelFrame
    //Return: None (void)
@@ -86,7 +86,7 @@ class MyPanel extends JPanel
    {
       this.frame = panFrame;
    }
-   
+
    /************************************************************************
    //Method: addImage
    //Return: None (void)
@@ -98,7 +98,7 @@ class MyPanel extends JPanel
       this.removeAll();
       frame = ImageIO.read(new File(filename));
    }
-   
+
    /****************************************************************************
    //Method: addVideo
    //Return: None (void)
@@ -109,7 +109,7 @@ class MyPanel extends JPanel
       //Get rid of any image in panel
       if(frame != null)
          frame = null;
-      
+
       String os = System.getProperty("os.name").toLowerCase();
       if(os.indexOf("mac") >= 0)
       {
@@ -128,7 +128,7 @@ class MyPanel extends JPanel
          MediaPlayerFactory mpf = new MediaPlayerFactory();
          //control all interactions with the user
          emp = mpf.newEmbeddedMediaPlayer();
-         emp.setVideoSurface(mpf.newVideoSurface(c)); 
+         emp.setVideoSurface(mpf.newVideoSurface(c));
          //full screen
          emp.toggleFullScreen();
          emp.setEnableMouseInputHandling(true);
@@ -141,7 +141,7 @@ class MyPanel extends JPanel
          emp.pause();
       }
    }
-   
+
    /**************************************************************************
    //Method: playVideo
    //Return: None (void)
@@ -151,7 +151,7 @@ class MyPanel extends JPanel
    {
      emp.play();
    }
-   
+
    /***************************************************************************
    //Method: nextFrame
    //Return: None (void)
@@ -161,7 +161,7 @@ class MyPanel extends JPanel
    {
       emp.nextFrame();
    }
-   
+
    /***************************************************************************
    //Method: getFrames
    //Return: None (void)
@@ -177,7 +177,7 @@ class MyPanel extends JPanel
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         int returnVal = fc.showOpenDialog(null);
 
-        if (returnVal == JFileChooser.APPROVE_OPTION) 
+        if (returnVal == JFileChooser.APPROVE_OPTION)
         {
            File file = fc.getSelectedFile();
            //Grab full path of directory
@@ -185,17 +185,17 @@ class MyPanel extends JPanel
         }
         else
            Main.alert("Must be a directory");
-      
+
         //If a directory location was selected for the screen shots then generate screen shots
         if(!(directory.equals("")))
-        {    
+        {
            //Allow dialog box for selecting directory to disappear
            try
            {
               TimeUnit.MILLISECONDS.sleep(500);
            }
            catch(Exception ex)
-           { 
+           {
               ex.printStackTrace();
            }
            while(true)
@@ -213,7 +213,7 @@ class MyPanel extends JPanel
                      ex.printStackTrace();
                   }
                }
-               
+
                count++;
                float current = emp.getPosition();
                float interval = 0.005f;
@@ -224,10 +224,10 @@ class MyPanel extends JPanel
          }
          else
             Main.alert("Did not get any frames");
-            
-        Main.alert("Capture frames was successful.");    
+
+        Main.alert("Capture frames was successful.");
    }
-   
+
    /***************************************************************************
    //Method: pauseVideo
    //Return: None (void)
