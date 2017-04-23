@@ -28,6 +28,7 @@ class MyPanel extends JPanel
 {
    Model model;
    private static BufferedImage frame;
+   private static String frameName;
    private static EmbeddedMediaPlayer emp;
    //Location of the VLCJ shared library (same location as the download for VLC)
    private static final String NATIVE_LIBRARY_SEARCH_PATH = "./library/";
@@ -96,9 +97,38 @@ class MyPanel extends JPanel
    {
       //clear panel for image
       this.removeAll();
-      frame = ImageIO.read(new File(filename));
+      File loadedImage = new File(filename);
+      //Get name of frame without file extension
+      String name = loadedImage.getName().substring(0, loadedImage.getName().indexOf("."));
+      setFrameName(name);
+      
+      frame = ImageIO.read(loadedImage);
+   }
+   
+   /************************************************************************
+   //Method: setFrameName
+   //Return: None (void)
+   //Purpose: set the name of the frame so that if the user decides to 
+   //   write data to a file, we can use the same name as the image
+   ************************************************************************/
+   public void setFrameName(String name) throws Exception
+   {
+      //Add "txt" extension for writing to a file
+      name = name + ".txt";
+      this.frameName = name;
    }
 
+   /****************************************************************************
+   //Method: getFrameName
+   //Return: String (frame's name)
+   //Purpose: return the name of the current frame to then save the text file
+   //   (used in conjunciton with setFrameName)
+   ****************************************************************************/
+   public String getFrameName()
+   {
+      return this.frameName;
+   }
+   
    /****************************************************************************
    //Method: addVideo
    //Return: None (void)

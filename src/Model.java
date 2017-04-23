@@ -10,6 +10,7 @@ import java.awt.Rectangle;
 import java.io.PrintWriter;
 import java.awt.Toolkit;
 import java.io.FileNotFoundException;
+import javax.swing.JFileChooser;
 
 class Model
 {
@@ -53,43 +54,138 @@ class Model
       y2 = y1 - y2;
       //Get the velocity magnitude
       double vel = VFI_Map.getVelocity(color);
+      double Vx = VFI_Map.getVx(color);
+      double Vy = VFI_Map.getVy(color);
 
-      vectors.add(new Vector(x1, y1, x2, y2, 5, 2, vel));
+      vectors.add(new Vector(x1, y1, x2, y2, 5, 2, Vx, Vy, vel));
    }
 
    /***************************************************************************************
    //Method: captureScreen
    //Return: None (void)
-   //Purpose: Allow user to take a screen shot of a selected rectangle in the frame
+   //Purpose: Allow user to take a screen shot of a selected rectangle in the frame and 
+   //   gather the average velocity of that region
    ***************************************************************************************/
    public void captureScreen(Rectangle rect) throws Exception
    {
       BufferedImage capture = ScreenImage.createImage(View.panel);//Grab only the frame from the GUI
       BufferedImage screenShot = capture.getSubimage(rect.x, rect.y, rect.width, rect.height);
+      
+      /*try 
+      {
+         int WIDTH = screenShot.getWidth();
+         int HEIGHT = screenShot.getHeight();
+         BufferedImage image = new BufferedImage(WIDTH,HEIGHT,BufferedImage.TYPE_INT_ARGB);
+         
+         for(int i = 0; i < HEIGHT; i++)
+         {
+            for(int j = 0; j < WIDTH; j++)
+            {
+               Color c = new Color(screenShot.getRGB(j, i));
+               float[] hsv = new float[3];
+               
+               Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsv);
+               //if ((hsv[0] != 0.0) && (Math.abs(hsv[0] - 0.6666667) > 0.02))
+               if((hsv[1] < 0.2)||(hsv[2] < 0.2))
+               {
+                  image.setRGB(j, i, 0x00ffffff);
+               }
+               else
+               {
+                  image.setRGB(j, i, screenShot.getRGB(j, i));
+               }
+            }
+         }
+         
+         ImageIO.write(image, "PNG", new File("temp.png"));
+         
+       } 
+       catch (Exception e) 
+       {
+          e.printStackTrace();
+       }*/      
+       
+      int count = 0;
+      double sum = 0.0;
+      
+      for(int i = 0; i < screenShot.getHeight(); i++)
+      {
+         for(int j = 0; j < screenShot.getWidth(); j++)
+         {
+            Color c = new Color(screenShot.getRGB(j, i));
+            int color = screenShot.getRGB(j, i);
+            float[] hsv = new float[3];
+      
+            Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsv);
+            //If the color is not gray scale (aka "is color")
+            if((hsv[1] > 0.2)&&(hsv[2] > 0.2))
+            {
+               sum += VFI_Map.getVelocity(color);
+               count++;
+            }
+          }
+      }
+      
+      double average = sum / count;
+      Main.alert("Average speed in region is " + average);
    }
 
    /**************************************************************************************
-   //Method: writeVecFile
+   //Method: writeFullFile
    //Return: None (void)
-   //Purpose: Write out vectors of a frame to a file
+   //Purpose: Write out x, y, Vx, Vy, and Velocity (magnitude) for all color pixels in 
+   //  frame's image
    **************************************************************************************/
-   public void writeVecFile()
+   public void writeFullFile(Rectangle rect)
    {
-      /**********************************************************************************
-      //NEEDS MORE WORK
-      //Save the file to the same name as the frame being analyzed
-      //Possibly look at re-saving the frame image to save the vectors that are drawn
-      **********************************************************************************/
-      if(vectors.size() > 0)
+      BufferedImage capture = ScreenImage.createImage(View.panel);
+      BufferedImage screenShot = capture.getSubimage(rect.x, rect.y, rect.width, rect.height);
+      int lineCount = 1;
+      
+      Main.alert("Choose location to save file");
+      
+      String directory = "";
+      JFileChooser fc = new JFileChooser();
+      fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      int returnVal = fc.showOpenDialog(null);
+
+      if (returnVal == JFileChooser.APPROVE_OPTION)
       {
+         File name = fc.getSelectedFile();
+         //Grab full path of directory
+         directory = name.getAbsolutePath();
+      }
+      else
+         Main.alert("Must be a directory");
+      
+      //If a directory is chosen
+      if(!directory.equals(""))
+      {
+         String fullpath = directory + "/" + View.panel.getFrameName();
+      
          try
          {
-            File file = new File("testing.txt");
+            File file = new File(fullpath);
             PrintWriter printWriter = new PrintWriter(file);
-            for(int i = 0; i < vectors.size(); i++)
+            for(int i = 0; i < screenShot.getHeight(); i++)
             {
-               int vectorNum = (i+1); //add one because of index at 0
-               printWriter.write("Vector number: " + vectorNum + " base (X): " + vectors.get(i).x1 + " base (Y): " + vectors.get(i).y1 + " Velocity: " + vectors.get(i).velocity + "\n");
+               for(int j = 0; j < screenShot.getWidth(); j++)
+               {
+                  Color c = new Color(screenShot.getRGB(j, i));
+                  int color = screenShot.getRGB(j, i);
+                  float[] hsv = new float[3];
+      
+                  Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsv);
+                  //If the color is not gray scale (aka "is color")
+                  if((hsv[1] > 0.2)&&(hsv[2] > 0.2))
+                  {
+                     double Vx = VFI_Map.getVx(color);
+                     double Vy = VFI_Map.getVy(color);
+                     double velocity = VFI_Map.getVelocity(color);
+                     printWriter.write("Line: " + lineCount + " X: " + j + " Y: " + i + " Vx: " + Vx + " Vy: " + Vy + " Speed " + velocity + "\n");
+                     lineCount++;
+                  }
+               }
             }
             printWriter.close();
          }
@@ -97,10 +193,71 @@ class Model
          {
             Main.alert("Error when creating file");
          }
+         
+         Main.alert("Finished writing file");
       }
       else
       {
-         Main.alert("No vectors are drawn");
+         Main.alert("No directory chosen (file was not written)");
+      }
+   }
+   
+   /**************************************************************************************
+   //Method: writeVecFile
+   //Return: None (void)
+   //Purpose: Write out drawn vectors of a frame to a file
+   **************************************************************************************/
+   public void writeVecFile()
+   {
+      Main.alert("Choose location to save file");
+      
+      String directory = "";
+      JFileChooser fc = new JFileChooser();
+      fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+      int returnVal = fc.showOpenDialog(null);
+
+      if (returnVal == JFileChooser.APPROVE_OPTION)
+      {
+         File name = fc.getSelectedFile();
+         //Grab full path of directory
+         directory = name.getAbsolutePath();
+      }
+      else
+         Main.alert("Must be a directory");
+   
+   
+      if(!directory.equals(""))
+      {
+         String fullpath = directory + "/" + View.panel.getFrameName();
+       
+         if(vectors.size() > 0)
+         {
+            try
+            {
+               File file = new File(fullpath);
+               PrintWriter printWriter = new PrintWriter(file);
+               for(int i = 0; i < vectors.size(); i++)
+               {
+                  int vectorNum = (i+1); //add one because of index at 0
+                  printWriter.write("Vector number: " + vectorNum + " X: " + vectors.get(i).x1 + " Y: " + vectors.get(i).y1 + " Vx: " + vectors.get(i).vel_X + " Vy: " + vectors.get(i).vel_Y + " Speed: " + vectors.get(i).velocity + "\n");
+               }
+               printWriter.close();
+            }
+            catch(FileNotFoundException e)
+            {
+               Main.alert("Error when creating file");
+            }
+         }
+         else
+         {
+            Main.alert("No vectors are drawn");
+         }
+      
+         Main.alert("Drawn vector file is created");
+      }
+      else
+      {
+         Main.alert("No file was written (directory not chosen)");
       }
    }
 }

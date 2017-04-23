@@ -55,9 +55,8 @@ class Controller implements MouseListener
          if(view.panel.getPanelFrame() != null)
             //Add vector only if the pixel is non grayscale color
             Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsv);
-            if ((hsv[0] == 0.0) || (Math.abs(hsv[0] - 0.6666667) < 0.0000001))
-              System.out.println("Invalid selection");
-            else
+            //Condition to not draw on grayscale locations
+            if((hsv[1] > 0.2)&&(hsv[2] > 0.2))
               model.addVector(e.getX(), e.getY(), view.panel.getPanelFrame().getRGB(e.getX(), e.getY()));
       }
    }

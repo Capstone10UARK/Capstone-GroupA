@@ -38,6 +38,7 @@ class View extends JFrame implements ActionListener
    private static JButton capture;
    private static JButton maxVel;
    private static JButton createFile;
+   private static JButton fullVecFile;
    private static JButton next;
    private static JButton play;
    private static JButton pause;
@@ -58,7 +59,7 @@ class View extends JFrame implements ActionListener
       this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       this.setSize((int)Toolkit.getDefaultToolkit().getScreenSize().getWidth(), (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight());
       this.setTitle("SVAS");
-
+      
       //Generate the different panels for the frame
       //The frame is the main window, which contains 3 individual panels
       this.panel = new MyPanel(model); //Panel contains the actual frame from "avi"
@@ -79,9 +80,12 @@ class View extends JFrame implements ActionListener
       maxVel = new JButton("Set Velocity");
       maxVel.addActionListener(this);
       //Create a file of the vectors drawn
-      createFile = new JButton("Create Vector File");
+      createFile = new JButton("Create Vector File (Drawn Vectors)");
       createFile.addActionListener(this);
-
+      //Create a file that rasters over all color pixels in a still frame  
+      fullVecFile = new JButton("Create Vector File (All Color Pixels)");
+      fullVecFile.addActionListener(this);
+      
       //Buttons to control the video
       next = new JButton("Next");
       next.addActionListener(this);
@@ -98,6 +102,7 @@ class View extends JFrame implements ActionListener
       buttonsPanel.add(maxVel);
       buttonsPanel.add(clear);
       buttonsPanel.add(createFile);
+      buttonsPanel.add(fullVecFile);
       stepPanel.add(pause);
       stepPanel.add(play);
       stepPanel.add(next);
@@ -222,7 +227,7 @@ class View extends JFrame implements ActionListener
                    View.model.captureScreen(rect);
                 }
                 else
-                   System.out.println("Did not read capture properly.");
+                   Main.alert("Did not read capture properly.");
              }
              catch(Exception ex)
              {
@@ -231,6 +236,29 @@ class View extends JFrame implements ActionListener
           }
           else
              Main.alert("No still image shown in frame");
+       }
+       else if(act.getSource() == fullVecFile)
+       {
+          if(View.panel.getPanelFrame() != null)
+          {
+             try
+             {
+                Rectangle rect = ScreenCaptureRectangle.getCapture();
+                if(rect != null)
+                {
+                   //Use the rectangular region selected to go over all color pixels and generate file
+                   View.model.writeFullFile(rect);
+                }
+             }
+             catch(Exception ex)
+             {
+               ex.printStackTrace();
+             }
+          }
+          else
+          {
+            Main.alert("No still image shown in frame");
+          }
        }
        else if(act.getSource() == maxVel)
        {
