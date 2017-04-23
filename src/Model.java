@@ -15,10 +15,10 @@ class Model
 {
    private Controller controller;
    private ArrayList<Vector> vectors;
-  
+
    /******************************************************************************
    //Method: Model (constructor)
-   //Purpose: Create the model (handles the logic behind creating vectors) and the 
+   //Purpose: Create the model (handles the logic behind creating vectors) and the
    //   list of vectors for the GUI
    ********************************************************************************/
    public Model(Controller c)
@@ -26,14 +26,14 @@ class Model
       this.controller = c;
       this.vectors = new ArrayList<Vector>();
    }
-   
+
    /********************************************************************************
    //Method: getVectors
    //Return: list of vectors
    //Purpose: Allow other classes in program to get the list of vectors
    ********************************************************************************/
    public ArrayList<Vector> getVectors() { return this.vectors; }
-   
+
    /*********************************************************************************
    //Method: addVector
    //Return: None (void)
@@ -42,7 +42,7 @@ class Model
    //          to the map provided in VFI_Map.java
    *********************************************************************************/
    public void addVector(int x1, int y1, int color)
-   {      
+   {
       //find x2, y2 (distance from center of color hue)
       //X2 is X difference from center of color wheel to the selected color from the frame
       int x2 = VFI_Map.getDistances(color)[0];
@@ -56,7 +56,7 @@ class Model
 
       vectors.add(new Vector(x1, y1, x2, y2, 5, 2, vel));
    }
-   
+
    /***************************************************************************************
    //Method: captureScreen
    //Return: None (void)
@@ -67,7 +67,7 @@ class Model
       BufferedImage capture = ScreenImage.createImage(View.panel);//Grab only the frame from the GUI
       BufferedImage screenShot = capture.getSubimage(rect.x, rect.y, rect.width, rect.height);
    }
-   
+
    /**************************************************************************************
    //Method: writeVecFile
    //Return: None (void)

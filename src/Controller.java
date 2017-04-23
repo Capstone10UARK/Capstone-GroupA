@@ -15,7 +15,7 @@ class Controller implements MouseListener
 {
    Model model;
    public static View view;
-   
+
    /*************************************************************************
    //Method: Controller (constructor)
    //Purpose: Construct the controller for the GUI
@@ -24,12 +24,12 @@ class Controller implements MouseListener
    {
       this.model = new Model(this);
    }
-   
+
    /*************************************************************************
    //Method: startView
    //Return: None (void)
    //Purpose: Call the constructor for the controller and create the view
-   //  add a timer to the view so that the view gets redrawn (helps with 
+   //  add a timer to the view so that the view gets redrawn (helps with
    //  having to draw vectos)
    *************************************************************************/
    public static void startView() throws Exception
@@ -38,22 +38,30 @@ class Controller implements MouseListener
       c.view = new View(c, c.model);
       new Timer(20, c.view).start();
    }
-   
+
    /*************************************************************************
    //Method: mousePressed
    //Return: None (void)
-   //Purpose: Listen for mouse being pressed in the GUI.  Add a vector to 
+   //Purpose: Listen for mouse being pressed in the GUI.  Add a vector to
    //  location the moused clicked
    *************************************************************************/
    public void mousePressed(MouseEvent e)
    {
+     Color c = new Color(view.panel.getPanelFrame().getRGB(e.getX(), e.getY()));
+     float[] hsv = new float[3];
+
       if(SwingUtilities.isLeftMouseButton(e))
       {
          if(view.panel.getPanelFrame() != null)
-            model.addVector(e.getX(), e.getY(), view.panel.getPanelFrame().getRGB(e.getX(), e.getY()));
+            //Add vector only if the pixel is non grayscale color
+            Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsv);
+            if ((hsv[0] == 0.0) || (Math.abs(hsv[0] - 0.6666667) < 0.0000001))
+              System.out.println("Invalid selection");
+            else
+              model.addVector(e.getX(), e.getY(), view.panel.getPanelFrame().getRGB(e.getX(), e.getY()));
       }
    }
-   
+
    public void mouseReleased(MouseEvent e) {    }
    public void mouseEntered(MouseEvent e) {    }
    public void mouseExited(MouseEvent e) {    }
