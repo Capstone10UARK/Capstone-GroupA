@@ -53,11 +53,13 @@ class Controller implements MouseListener
       if(SwingUtilities.isLeftMouseButton(e))
       {
          if(view.panel.getPanelFrame() != null)
+         {
             //Add vector only if the pixel is non grayscale color
             Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsv);
             //Condition to not draw on grayscale locations
             if((hsv[1] > 0.2)&&(hsv[2] > 0.2))
               model.addVector(e.getX(), e.getY(), view.panel.getPanelFrame().getRGB(e.getX(), e.getY()));
+         }
       }
    }
 

@@ -188,7 +188,7 @@ class MyPanel extends JPanel
    //Purpose: Move the video to the next frame
    ***************************************************************************/
    public void nextFrame()
-   {
+   {  
       emp.nextFrame();
    }
 
@@ -215,7 +215,12 @@ class MyPanel extends JPanel
         }
         else
            Main.alert("Must be a directory");
-
+        
+        //Set the time to jump for a single frame
+        //1000 ms/s divided by frames/second = ms / frame
+        float fps = emp.getFps();
+        long singleFrame = (long)(1000 / fps);
+           
         //If a directory location was selected for the screen shots then generate screen shots
         if(!(directory.equals("")))
         {
@@ -228,9 +233,14 @@ class MyPanel extends JPanel
            {
               ex.printStackTrace();
            }
+
            while(true)
            {
-               //emp.saveSnapshot(new File("frame" + Integer.toString(count)));
+               long currentTime = emp.getTime();
+               //If the current time is over the length (video is over--break from loop)
+               if(currentTime >= emp.getLength())
+                  break;
+                  
                BufferedImage image = emp.getVideoSurfaceContents();
                if(image != null)
                {
@@ -243,19 +253,23 @@ class MyPanel extends JPanel
                      ex.printStackTrace();
                   }
                }
-
-               count++;
-               float current = emp.getPosition();
-               float interval = 0.005f;
-               if((emp.getPosition() > 1.0f) || (current + interval > 1.0f))
+               long newTime = currentTime + singleFrame;
+               //If the next step is over the length (video/capture is done)
+               if(newTime >= emp.getLength())
                   break;
-               emp.setPosition((current + interval));
+               
+               //If we didn't break, set new time and continue to grab more frames
+               emp.setTime(newTime);
+               count++;
            }
-         }
-         else
-            Main.alert("Did not get any frames");
-
-        Main.alert("Capture frames was successful.");
+       }
+       else
+          Main.alert("Did not get any frames (no directory selected)");
+        
+        if(count != 0)
+           Main.alert("Capture frames was successful.");
+        else
+           Main.alert("No frames to capture (end of video)");
    }
 
    /***************************************************************************
