@@ -80,9 +80,9 @@ class VFI_Map
            Color map = new Color((int)pair.getKey());
            float[] hsl = new float[3];
            Color.RGBtoHSB(map.getRed(), map.getGreen(), map.getBlue(), hsl);
-           float difference = Math.abs(selectedHSL[0] - hsl[0]);
+           float difference = Math.abs(selectedHSL[0] - hsl[0]) + Math.abs(selectedHSL[1] - hsl[1]) + Math.abs(selectedHSL[2] - hsl[2]);
 
-           if(difference < minDifference && difference < 0.01)
+           if(difference < minDifference)
            {
               minDifference = difference;
               value = (int)pair.getKey();

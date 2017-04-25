@@ -50,8 +50,8 @@ class Model
       //Y2 is Y difference from center of color wheel to the selected color from the frame
       int y2 = VFI_Map.getDistances(color)[1];
       //Set the end point of the vector to relative distance the the color is on the color wheel
-      x2 = x1 - x2;
-      y2 = y1 - y2;
+      x2 = (x1 - x2);
+      y2 = (y1 - y2);
       //Get the velocity magnitude
       double vel = VFI_Map.getVelocity(color);
       double Vx = VFI_Map.getVx(color);

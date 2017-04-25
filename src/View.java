@@ -74,7 +74,7 @@ class View extends JFrame implements ActionListener
       clear = new JButton("Clear Vectors");
       clear.addActionListener(this);
       //Button to allow user to capture a portion of the screen
-      capture = new JButton("Get Average Velocity in Area");
+      capture = new JButton("Get Average Speed in Area");
       capture.addActionListener(this);
       //Button to allow user to set the maximum velocity
       maxVel = new JButton("Set Velocity");
