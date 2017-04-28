@@ -109,12 +109,10 @@ class MyPanel extends JPanel
    //Method: setFrameName
    //Return: None (void)
    //Purpose: set the name of the frame so that if the user decides to 
-   //   write data to a file, we can use the same name as the image
+   //   write data to a file
    ************************************************************************/
    public void setFrameName(String name) throws Exception
    {
-      //Add "txt" extension for writing to a file
-      name = name + ".txt";
       this.frameName = name;
    }
 
@@ -143,6 +141,7 @@ class MyPanel extends JPanel
       String os = System.getProperty("os.name").toLowerCase();
       if(os.indexOf("mac") >= 0)
       {
+         /*Future work: upload VLC media player to java GUI for MAC*/
          Main.alert("GUI does not support Mac playing a video");
       }
       else

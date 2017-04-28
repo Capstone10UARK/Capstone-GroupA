@@ -132,15 +132,18 @@ class View extends JFrame implements ActionListener
    //Method: getUserInput (stand-alone window)
    //Return: None (void)
    //Purpose: Create a popup window to get user input and set the maximum Velocity
+   //    or the name of the file to save
    *********************************************************************************/
-   public void getUserInput()
+   public static void getUserInput()
    {
       JFrame getMax = new JFrame();
       JPanel instructions = new JPanel();
       JPanel userInput = new JPanel();
       JPanel submission = new JPanel();
+      JLabel instruction = null;
 
-      JLabel instruction = new JLabel("Enter the maximum velocity");
+      //Set the instruction for the input
+      instruction = new JLabel("Enter the maximum velocity");
       instructions.add(instruction);
 
       JTextField inputField = new JTextField(20);
@@ -155,7 +158,15 @@ class View extends JFrame implements ActionListener
              if(act.getSource() == submit)
              {
                 String text = inputField.getText();
-                VFI_Map.setMaxVelocity(Double.parseDouble(text));
+                try
+                {
+                   VFI_Map.setMaxVelocity(Double.parseDouble(text));
+                }
+                catch(Exception ex)
+                {
+                   Main.alert("Error when trying to get user input");
+                }
+                
                 getMax.dispose();
              }
           }

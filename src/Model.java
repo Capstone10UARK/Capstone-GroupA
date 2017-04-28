@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.awt.Toolkit;
 import java.io.FileNotFoundException;
 import javax.swing.JFileChooser;
+import java.text.DecimalFormat;
 
 class Model
 {
@@ -28,6 +29,19 @@ class Model
       this.vectors = new ArrayList<Vector>();
    }
 
+   /********************************************************************************
+   //Method: Truncate
+   //Return: double (after rounding)
+   //Purpose: Round all velocity (and average speed) to two decimal points
+   ********************************************************************************/
+   public double truncate(double value)
+   {
+      DecimalFormat df = new DecimalFormat("#.##");
+      String trunc = df.format(value);
+
+      return Double.parseDouble(trunc);
+   }   
+   
    /********************************************************************************
    //Method: getVectors
    //Return: list of vectors
@@ -60,18 +74,13 @@ class Model
       vectors.add(new Vector(x1, y1, x2, y2, 5, 2, Vx, Vy, vel));
    }
 
-   /***************************************************************************************
-   //Method: captureScreen
-   //Return: None (void)
-   //Purpose: Allow user to take a screen shot of a selected rectangle in the frame and 
-   //   gather the average velocity of that region
-   ***************************************************************************************/
-   public void captureScreen(Rectangle rect) throws Exception
-   {
-      BufferedImage capture = ScreenImage.createImage(View.panel);//Grab only the frame from the GUI
-      BufferedImage screenShot = capture.getSubimage(rect.x, rect.y, rect.width, rect.height);
-      
-      /*try 
+   /**************************************************************************************
+   //NOTE: Code below is used to create an image in the working directory of the program.
+   //  During testing, this code was placed after creating the "screenShot" variable in 
+   //  the "captureScreen" method.  The resulting image will show the removal of grayscale
+   //  colors in a still frame from an avi file.
+   **************************************************************************************/
+   /*try 
       {
          int WIDTH = screenShot.getWidth();
          int HEIGHT = screenShot.getHeight();
@@ -85,7 +94,6 @@ class Model
                float[] hsv = new float[3];
                
                Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsv);
-               //if ((hsv[0] != 0.0) && (Math.abs(hsv[0] - 0.6666667) > 0.02))
                if((hsv[1] < 0.2)||(hsv[2] < 0.2))
                {
                   image.setRGB(j, i, 0x00ffffff);
@@ -103,7 +111,18 @@ class Model
        catch (Exception e) 
        {
           e.printStackTrace();
-       }*/      
+       }    */  
+   
+   /***************************************************************************************
+   //Method: captureScreen
+   //Return: None (void)
+   //Purpose: Allow user to take a screen shot of a selected rectangle in the frame and 
+   //   gather the average velocity of that region
+   ***************************************************************************************/
+   public void captureScreen(Rectangle rect) throws Exception
+   {
+      BufferedImage capture = ScreenImage.createImage(View.panel);//Grab only the frame from the GUI
+      BufferedImage screenShot = capture.getSubimage(rect.x, rect.y, rect.width, rect.height);
        
       int count = 0;
       double sum = 0.0;
@@ -126,7 +145,9 @@ class Model
           }
       }
       
-      double average = sum / count;
+      double tempAverage = sum / count;
+      //Save average only to two decimal places
+      double average = truncate(tempAverage);
       Main.alert("Average speed in region is " + average);
    }
 
@@ -161,12 +182,29 @@ class Model
       //If a directory is chosen
       if(!directory.equals(""))
       {
-         String fullpath = directory + "/" + View.panel.getFrameName();
+         String fullpath = directory + "/" + View.panel.getFrameName() + ".csv";
       
          try
          {
             File file = new File(fullpath);
             PrintWriter printWriter = new PrintWriter(file);
+            //Build the header of the spreadsheet file
+            StringBuilder sb = new StringBuilder();
+            sb.append("Line");
+            sb.append(',');
+            sb.append("X");
+            sb.append(",");
+            sb.append("Y");
+            sb.append(",");
+            sb.append("Vx");
+            sb.append(",");
+            sb.append("Vy");
+            sb.append(",");
+            sb.append("Speed");
+            sb.append('\n');
+            
+            printWriter.write(sb.toString());
+            
             for(int i = 0; i < screenShot.getHeight(); i++)
             {
                for(int j = 0; j < screenShot.getWidth(); j++)
@@ -182,7 +220,7 @@ class Model
                      double Vx = VFI_Map.getVx(color);
                      double Vy = VFI_Map.getVy(color);
                      double velocity = VFI_Map.getVelocity(color);
-                     printWriter.write("Line: " + lineCount + " X: " + j + " Y: " + i + " Vx: " + Vx + " Vy: " + Vy + " Speed " + velocity + "\n");
+                     printWriter.write(lineCount + ", " + j + ", " + i + ", " + truncate(Vx) + ", " + truncate(Vy) + ", " + truncate(velocity) + "\n");
                      lineCount++;
                   }
                }
@@ -228,7 +266,7 @@ class Model
    
       if(!directory.equals(""))
       {
-         String fullpath = directory + "/" + View.panel.getFrameName();
+         String fullpath = directory + "/" + View.panel.getFrameName() + ".csv";
        
          if(vectors.size() > 0)
          {
@@ -236,10 +274,27 @@ class Model
             {
                File file = new File(fullpath);
                PrintWriter printWriter = new PrintWriter(file);
+               //Build the header of the spreadsheet file
+               StringBuilder sb = new StringBuilder();
+               sb.append("Vector Number");
+               sb.append(',');
+               sb.append("X");
+               sb.append(",");
+               sb.append("Y");
+               sb.append(",");
+               sb.append("Vx");
+               sb.append(",");
+               sb.append("Vy");
+               sb.append(",");
+               sb.append("Speed");
+               sb.append('\n');
+            
+               printWriter.write(sb.toString());
+               
                for(int i = 0; i < vectors.size(); i++)
                {
                   int vectorNum = (i+1); //add one because of index at 0
-                  printWriter.write("Vector number: " + vectorNum + " X: " + vectors.get(i).x1 + " Y: " + vectors.get(i).y1 + " Vx: " + vectors.get(i).vel_X + " Vy: " + vectors.get(i).vel_Y + " Speed: " + vectors.get(i).velocity + "\n");
+                  printWriter.write(vectorNum + ", " + vectors.get(i).x1 + ", " + vectors.get(i).y1 + ", " + truncate(vectors.get(i).vel_X) + ", " + truncate(vectors.get(i).vel_Y) + ", " + truncate(vectors.get(i).velocity) + "\n");
                }
                printWriter.close();
             }
