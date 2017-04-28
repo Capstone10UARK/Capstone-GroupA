@@ -140,10 +140,9 @@ class View extends JFrame implements ActionListener
       JPanel instructions = new JPanel();
       JPanel userInput = new JPanel();
       JPanel submission = new JPanel();
-      JLabel instruction = null;
 
       //Set the instruction for the input
-      instruction = new JLabel("Enter the maximum velocity");
+      JLabel instruction = new JLabel("Enter the maximum velocity");
       instructions.add(instruction);
 
       JTextField inputField = new JTextField(20);
