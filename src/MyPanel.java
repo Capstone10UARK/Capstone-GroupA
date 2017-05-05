@@ -68,6 +68,26 @@ class MyPanel extends JPanel
       }
    }
 
+   /**************************************************************************
+   //Method: drawVideo (WARNING: does not work)
+   //Return: None (void)
+   //Purpose: capture the current frame of the video and draw vectors on this
+   //  frame by calling the add vector method in model class
+   **************************************************************************/
+  /* public void drawVideo(int x, int y)
+   {
+      int color = emp.getVideoSurfaceContents().getRGB(x, y);
+      System.out.println("Value of color is " + color);
+   
+      Color c = new Color(emp.getVideoSurfaceContents().getRGB(x, y));
+      float[] hsv = new float[3];
+      //Add vector only if the pixel is non grayscale color
+      Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsv);
+      //Condition to not draw on grayscale locations
+      if((hsv[1] > 0.2)&&(hsv[2] > 0.2))
+          model.addVector(x, y, emp.getVideoSurfaceContents().getRGB(x, y));
+   }*/
+   
    /************************************************************************
    //Method: getPanelFrame
    //Return: BufferedImage frame

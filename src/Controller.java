@@ -47,19 +47,23 @@ class Controller implements MouseListener
    *************************************************************************/
    public void mousePressed(MouseEvent e)
    {
-     Color c = new Color(view.panel.getPanelFrame().getRGB(e.getX(), e.getY()));
-     float[] hsv = new float[3];
-
       if(SwingUtilities.isLeftMouseButton(e))
       {
          if(view.panel.getPanelFrame() != null)
          {
+            Color c = new Color(view.panel.getPanelFrame().getRGB(e.getX(), e.getY()));
+            float[] hsv = new float[3];
             //Add vector only if the pixel is non grayscale color
             Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), hsv);
             //Condition to not draw on grayscale locations
             if((hsv[1] > 0.2)&&(hsv[2] > 0.2))
               model.addVector(e.getX(), e.getY(), view.panel.getPanelFrame().getRGB(e.getX(), e.getY()));
          }
+         //WARNING: Drawing on video does not work
+         /*if(View.panel.getComponents().length != 0)
+         {
+            View.panel.drawVideo(e.getX(), e.getY());
+         }*/
       }
    }
 

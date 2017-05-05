@@ -150,7 +150,7 @@ class Model
       double average = truncate(tempAverage);
       Main.alert("Average speed in region is " + average);
    }
-
+   
    /**************************************************************************************
    //Method: writeFullFile
    //Return: None (void)
@@ -182,7 +182,7 @@ class Model
       //If a directory is chosen
       if(!directory.equals(""))
       {
-         String fullpath = directory + "/" + View.panel.getFrameName() + ".csv";
+         String fullpath = directory + "/" + View.panel.getFrameName() + "AllColor.csv";
       
          try
          {
